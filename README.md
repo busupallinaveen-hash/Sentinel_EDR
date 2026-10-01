@@ -147,22 +147,7 @@ sentinel.py                    ← Main entry point + orchestrator
 
 ---
 
-## Comparison
 
-| Capability | NeuralGuard | IDPS v7 | **SentinelEDR** |
-|-----------|-------------|---------|-----------------|
-| Cross-platform | ✅ | Windows only | ✅ |
-| Min dependencies | 2 | 30+ | **2 core, opt-in ML** |
-| Behavioral DNA | ✅ | ❌ | ✅ |
-| Sigma rules | ❌ | ✅ | ✅ |
-| ML anomaly (IF) | ❌ | ✅ | ✅ plugin |
-| GNN lateral move | ❌ | ✅ | ✅ plugin |
-| Attack chain corr. | ❌ | ✅ | ✅ |
-| USB/Email/DLP | ✅ | ❌ | ✅ |
-| Honeypots (file+net) | ✅ file only | ✅ net only | ✅ both |
-| MITRE mapping | ✅ | partial | ✅ full |
-| Self-test | ✅ | ❌ | ✅ 11 tests |
-| Setup time | 5 min | 30+ min | **5 min** |
 
 ---
 
