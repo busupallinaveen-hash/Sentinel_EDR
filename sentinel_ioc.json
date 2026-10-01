@@ -1,0 +1,14 @@
+{
+  "_comment": "SentinelEDR IOC file. Add your own indicators below.",
+  "ip": {
+    "1.2.3.4": "Known C2 server \u2014 add your IOCs here"
+  },
+  "domain": {
+    "bad.example.com": "Known malicious domain"
+  },
+  "hash_md5": {
+    "abc123...": "Known malware hash"
+  },
+  "hash_sha256": {},
+  "process_name": {}
+}

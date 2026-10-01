@@ -1,0 +1,154 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# SentinelEDR v1.0 — Configuration File
+# ══════════════════════════════════════════════════════════════════════════════
+
+agent:
+  name: "SentinelEDR"
+  version: "1.0.0"
+  node_id: ""
+
+paths:
+  log:        "/tmp/sentinel_edr.log"
+  alerts:     "/tmp/sentinel_alerts.json"
+  quarantine: "/tmp/sentinel_quarantine"
+  forensics:  "/tmp/sentinel_forensics"
+  models:     "models"
+
+mode:
+  dry_run:      false
+  lite:         false
+  no_ml:        false
+  auto_respond: true
+  debug:        false
+
+detection:
+  scan_interval:           3
+  extended_scan_interval:  10
+  z_score_threshold:       5.0
+  min_profile_samples:     10
+  entropy_threshold:       7.2
+  velocity_limit:          20
+  velocity_window:         60
+  connection_threshold:    50
+  temporal_rare_threshold: 0.02
+  min_temporal_obs:        30
+  suspicious_ports: [4444,1337,31337,8888,9001,9999,6666,6667,12345,54321,65535,4321,666,3333,5555,7777]
+
+response:
+  kill_threshold:       85
+  quarantine_threshold: 80
+  block_ip_threshold:   75
+  forensics_threshold:  60
+  # Host network isolation (block all traffic except loopback) when mass
+  # ransomware file-write velocity is detected. This is the single most
+  # disruptive automated action SentinelEDR can take — it can cut off your
+  # own remote access to this machine. Off by default. Only enable this
+  # after you've run in --dry-run long enough to trust the false-positive
+  # rate on YOUR machine, and know that `sentinel.py --restore-network`
+  # is the manual undo if it fires unexpectedly.
+  isolate_on_ransomware: true
+  always_kill:
+    - "HONEYPOT_FILE_ACCESS"
+    - "HONEYPOT_NETWORK_HIT"
+    - "RANSOMWARE_ENTROPY"
+    - "RANSOMWARE_VELOCITY"
+  always_forensics:
+    - "ATTACK_CHAIN_DETECTED"
+    - "GNN_LATERAL_MOVEMENT"
+    - "ML_ANOMALY_ISOLATION_FOREST"
+  protected_processes:
+    - "systemd"
+    - "init"
+    - "kernel"
+    - "launchd"
+    - "winlogon"
+    - "csrss"
+    - "lsass"
+    - "services"
+    - "explorer"
+    - "sentinel"
+
+honeypot:
+  file_honeypots_enabled:    true
+  network_honeypots_enabled: true
+
+ml:
+  isolation_forest:
+    enabled:           true
+    contamination:     0.05
+    n_estimators:      100
+    retrain_every:     500
+    anomaly_threshold: -0.2
+  lstm:
+    enabled:           true
+    sequence_length:   20
+    hidden_dim:        64
+    epochs:            5
+    retrain_every:     1000
+    anomaly_threshold: 0.85
+  gnn:
+    enabled:           true
+    window_seconds:    1800
+    max_nodes:         10000
+    anomaly_threshold: 0.75
+
+threat_intel:
+  enabled: false
+  feeds:
+    - name: "Abuse.ch URLhaus"
+      url:  "https://urlhaus-api.abuse.ch/v1/urls/recent/"
+      type: "url"
+    - name: "MISP"
+      url:  ""
+      key:  ""
+  update_interval: 3600
+
+server:
+  enabled:   false
+  host:      "0.0.0.0"
+  port:      8765
+  report_to: ""
+  api_key:   ""
+
+dashboard:
+  enabled: true
+  host:    "127.0.0.1"
+  port:    8766
+
+siem:
+  splunk:
+    enabled:   false
+    hec_url:   ""
+    hec_token: ""
+    index:     "sentinel_edr"
+  elastic:
+    enabled:   false
+    url:       ""
+    index:     "sentinel-edr-alerts"
+    api_key:   ""
+
+notifications:
+  desktop:
+    # Native OS popup (Windows balloon tip / notify-send / macOS Notification
+    # Center) — no external service, no webhook, no extra pip dependency.
+    enabled:            true
+    min_severity:       "HIGH"   # LOW | MEDIUM | HIGH | CRITICAL
+    rate_limit_seconds: 5        # minimum gap between popups, to avoid a
+                                  # stack of notifications during an alert burst
+  slack:
+    enabled:      false
+    webhook_url:  ""
+    min_severity: "HIGH"
+  teams:
+    enabled:      false
+    webhook_url:  ""
+    min_severity: "HIGH"
+  email:
+    enabled:      false
+    smtp_host:    ""
+    smtp_port:    587
+    username:     ""
+    password:     ""
+    from:         "sentinel@yourdomain.com"
+    to:           []
+    min_severity: "CRITICAL"
